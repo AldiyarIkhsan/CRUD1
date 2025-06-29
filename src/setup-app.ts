@@ -1,4 +1,3 @@
-// setup-app.ts
 import express, { Express, Request, Response } from "express";
 
 interface Video {
@@ -18,24 +17,24 @@ let nextId = 1;
 export const setupApp = (app: Express) => {
   app.use(express.json());
 
-  app.delete("/hometask_01/api/testing/all-data", (_req, res) => {
+  app.delete("/videos", (_req, res) => {
     videos = [];
     nextId = 1;
     res.sendStatus(204);
   });
 
-  app.get("/hometask_01/api/videos", (_req, res) => {
+  app.get("/videos", (_req, res) => {
     res.status(200).json(videos);
   });
 
-  app.get("/hometask_01/api/videos/:id", (req: Request, res: Response) => {
+  app.get("/videos/:id", (req: Request, res: Response) => {
     const id = +req.params.id;
     const video = videos.find((v) => v.id === id);
     if (!video) return res.sendStatus(404);
     res.status(200).json(video);
   });
 
-  app.post("/hometask_01/api/videos", (req: Request, res: Response) => {
+  app.post("/videos", (req: Request, res: Response) => {
     const { title, author, availableResolutions } = req.body;
 
     if (!title || !author || !Array.isArray(availableResolutions)) {
@@ -64,7 +63,7 @@ export const setupApp = (app: Express) => {
     res.status(201).json(newVideo);
   });
 
-  app.put("/hometask_01/api/videos/:id", (req: Request, res: Response) => {
+  app.put("/videos/:id", (req: Request, res: Response) => {
     const id = +req.params.id;
     const video = videos.find((v) => v.id === id);
     if (!video) return res.sendStatus(404);
@@ -101,7 +100,7 @@ export const setupApp = (app: Express) => {
     res.sendStatus(204);
   });
 
-  app.delete("/hometask_01/api/videos/:id", (req: Request, res: Response) => {
+  app.delete("/videos/:id", (req: Request, res: Response) => {
     const id = +req.params.id;
     const index = videos.findIndex((v) => v.id === id);
     if (index === -1) return res.sendStatus(404);
