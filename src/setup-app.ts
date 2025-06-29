@@ -22,7 +22,6 @@ let nextId = 1;
 export const setupApp = (app: Express) => {
   app.use(express.json());
 
-  // DELETE /testing/all-data
   app.delete("/testing/all-data", (_req, res) => {
     videos = [];
     nextId = 1;
@@ -35,24 +34,26 @@ export const setupApp = (app: Express) => {
 
   app.get("/videos/:id", (req, res) => {
     const id = +req.params.id;
-    const video = videos.find(v => v.id === id);
+    const video = videos.find((v) => v.id === id);
     if (!video) return res.sendStatus(404);
     res.status(200).json(video);
   });
 
   app.post("/videos", (req: Request, res: Response) => {
     const { title, author, availableResolutions } = req.body;
-    const errors = [];
+    const errors: { message: string; field: string }[] = [];
 
-    if (!title || typeof title !== "string") {
+    if (!title || typeof title !== "string" || title.length > 40) {
       errors.push({ message: "Invalid value", field: "title" });
     }
-    if (!author || typeof author !== "string") {
+
+    if (!author || typeof author !== "string" || author.length > 20) {
       errors.push({ message: "Invalid value", field: "author" });
     }
+
     if (
       !Array.isArray(availableResolutions) ||
-      !availableResolutions.every(r => validResolutions.includes(r))
+      !availableResolutions.every((r) => validResolutions.includes(r))
     ) {
       errors.push({ message: "Invalid value", field: "availableResolutions" });
     }
@@ -93,27 +94,41 @@ export const setupApp = (app: Express) => {
       publicationDate,
     } = req.body;
 
-    const errors = [];
+    const errors: { message: string; field: string }[] = [];
 
-    if (!title || typeof title !== "string") {
+    if (!title || typeof title !== "string" || title.length > 40) {
       errors.push({ message: "Invalid value", field: "title" });
     }
-    if (!author || typeof author !== "string") {
+
+    if (!author || typeof author !== "string" || author.length > 20) {
       errors.push({ message: "Invalid value", field: "author" });
     }
+
     if (
       !Array.isArray(availableResolutions) ||
-      !availableResolutions.every(r => validResolutions.includes(r))
+      !availableResolutions.every((r) => validResolutions.includes(r))
     ) {
       errors.push({ message: "Invalid value", field: "availableResolutions" });
     }
+
     if (typeof canBeDownloaded !== "boolean") {
       errors.push({ message: "Invalid value", field: "canBeDownloaded" });
     }
-    if (minAgeRestriction !== null && (typeof minAgeRestriction !== "number" || minAgeRestriction < 0 || minAgeRestriction > 18)) {
+
+    if (
+      minAgeRestriction !== null &&
+      (typeof minAgeRestriction !== "number" ||
+        minAgeRestriction < 0 ||
+        minAgeRestriction > 18)
+    ) {
       errors.push({ message: "Invalid value", field: "minAgeRestriction" });
     }
-    if (!publicationDate || typeof publicationDate !== "string" || isNaN(Date.parse(publicationDate))) {
+
+    if (
+      !publicationDate ||
+      typeof publicationDate !== "string" ||
+      isNaN(Date.parse(publicationDate))
+    ) {
       errors.push({ message: "Invalid value", field: "publicationDate" });
     }
 
